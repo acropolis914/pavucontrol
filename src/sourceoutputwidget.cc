@@ -6,7 +6,7 @@
 
   pavucontrol is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 2 of the License, or
+  the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
   pavucontrol is distributed in the hope that it will be useful, but
@@ -78,9 +78,6 @@ void SourceOutputWidget::updateDeviceComboBox() {
         if (source->index == mSourceIndex)
             currentSourceName = source->name;
     }
-
-    if (currentSourceName == UNKNOWN_DEVICE_NAME)
-        deviceComboBox->append(UNKNOWN_DEVICE_NAME, _("Unknown input"));
 
     deviceComboBox->set_active_id(currentSourceName);
 }

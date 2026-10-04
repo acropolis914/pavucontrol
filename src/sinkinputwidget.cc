@@ -6,7 +6,7 @@
 
   pavucontrol is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 2 of the License, or
+  the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
   pavucontrol is distributed in the hope that it will be useful, but
@@ -73,9 +73,6 @@ void SinkInputWidget::updateDeviceComboBox() {
         if (sink->index == mSinkIndex)
             currentSinkName = sink->name;
     }
-
-    if (currentSinkName == UNKNOWN_DEVICE_NAME)
-        deviceComboBox->append(UNKNOWN_DEVICE_NAME, _("Unknown output"));
 
     deviceComboBox->set_active_id(currentSinkName);
 }
