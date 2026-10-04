@@ -28,6 +28,16 @@
 
 #include "i18n.h"
 
+static void sink_info_callback(pa_context*, const pa_sink_info *info, int eol, void *userdata) {
+    SinkInputWidget *w = static_cast<SinkInputWidget*>(userdata);
+
+    if (eol > 0 || !info || info->index != w->sinkIndex())
+        return;
+
+    w->deviceComboBox->append(info->name, info->description);
+    w->deviceComboBox->set_active_id(info->name);
+}
+
 SinkInputWidget::SinkInputWidget(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& x) :
     StreamWidget(cobject, x) {
 
@@ -74,7 +84,13 @@ void SinkInputWidget::updateDeviceComboBox() {
             currentSinkName = sink->name;
     }
 
-    deviceComboBox->set_active_id(currentSinkName);
+    if (currentSinkName == UNKNOWN_DEVICE_NAME && mSinkIndex != PA_INVALID_INDEX) {
+        pa_operation *o = pa_context_get_sink_info_by_index(get_context(), mSinkIndex, sink_info_callback, this);
+        if (o)
+            pa_operation_unref(o);
+    } else {
+        deviceComboBox->set_active_id(currentSinkName);
+    }
 }
 
 void SinkInputWidget::executeVolumeUpdate() {

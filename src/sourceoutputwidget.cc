@@ -28,6 +28,16 @@
 
 #include "i18n.h"
 
+static void source_info_callback(pa_context*, const pa_source_info *info, int eol, void *userdata) {
+    SourceOutputWidget *w = static_cast<SourceOutputWidget*>(userdata);
+
+    if (eol > 0 || !info || info->index != w->sourceIndex())
+        return;
+
+    w->deviceComboBox->append(info->name, info->description);
+    w->deviceComboBox->set_active_id(info->name);
+}
+
 SourceOutputWidget::SourceOutputWidget(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& x) :
     StreamWidget(cobject, x) {
 
@@ -79,7 +89,13 @@ void SourceOutputWidget::updateDeviceComboBox() {
             currentSourceName = source->name;
     }
 
-    deviceComboBox->set_active_id(currentSourceName);
+    if (currentSourceName == UNKNOWN_DEVICE_NAME && mSourceIndex != PA_INVALID_INDEX) {
+        pa_operation *o = pa_context_get_source_info_by_index(get_context(), mSourceIndex, source_info_callback, this);
+        if (o)
+            pa_operation_unref(o);
+    } else {
+        deviceComboBox->set_active_id(currentSourceName);
+    }
 }
 
 #if HAVE_SOURCE_OUTPUT_VOLUMES
